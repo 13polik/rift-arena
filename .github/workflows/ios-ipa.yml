@@ -1,0 +1,67 @@
+# Builds an UNSIGNED RiftArena.ipa on a GitHub macOS runner.
+# Sign it afterwards on Windows (iloader / Sideloadly) with your own Apple ID, then install on the iPhone.
+name: iOS IPA (unsigned)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+env:
+  GODOT_VERSION: "4.7.2"
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot + iOS export template
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          curl -sSL -o godot.zip "$base/Godot_v${GODOT_VERSION}-stable_macos.universal.zip"
+          unzip -q godot.zip
+          echo "GODOT=$PWD/Godot.app/Contents/MacOS/Godot" >> "$GITHUB_ENV"
+          curl -sSL -o templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q templates.tpz "templates/ios.zip" "templates/version.txt"
+          tdir="$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$tdir"
+          cp templates/ios.zip templates/version.txt "$tdir/"
+          rm -f templates.tpz godot.zip
+
+      - name: Export Xcode project from Godot
+        run: |
+          set -euo pipefail
+          # Signing happens later on the user's side; Godot only needs a placeholder team id to write the project.
+          sed -i '' 's/^application\/app_store_team_id=""/application\/app_store_team_id="UNSIGNED00"/' export_presets.cfg
+          sed -i '' 's/^application\/export_project_only=false/application\/export_project_only=true/' export_presets.cfg
+          "$GODOT" --headless --path . --import || true
+          mkdir -p build/ios
+          "$GODOT" --headless --path . --export-release "iOS" build/ios/RiftArena.ipa
+          ls build/ios
+
+      - name: Compile with Xcode (no code signing)
+        run: |
+          set -euo pipefail
+          xcodebuild -project build/ios/RiftArena.xcodeproj -scheme RiftArena -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath dd \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM="" \
+            build | tail -40
+
+      - name: Package IPA
+        run: |
+          set -euo pipefail
+          app=$(find dd/Build/Products -maxdepth 2 -name "RiftArena.app" -type d | head -1)
+          echo "App bundle: $app"
+          mkdir -p out/Payload
+          cp -R "$app" out/Payload/
+          (cd out && zip -qry RiftArena.ipa Payload)
+          ls -la out/RiftArena.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftArena-unsigned-ipa
+          path: out/RiftArena.ipa
+          retention-days: 30
