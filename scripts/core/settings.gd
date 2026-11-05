@@ -14,7 +14,7 @@ var player_name := ""
 var hero: StringName = &"volt"
 var last_address := ""
 ## Internet server (WebSocket). Players can change it in SETTINGS to use their own server.
-const ONLINE_SERVER_DEFAULT := ""
+const ONLINE_SERVER_DEFAULT := "wss://rift-arena-enm7.onrender.com"
 var online_server := ONLINE_SERVER_DEFAULT
 var music_volume := 0.6
 var sfx_volume := 0.9
