@@ -1,0 +1,78 @@
+[gd_resource type="Resource" script_class="HeroData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/ability_data.gd" id="2"]
+
+[sub_resource type="Resource" id="atk"]
+script = ExtResource("2")
+display_name = "SEEKER DARTS"
+kind = 0
+damage = 230.0
+cooldown = 0.5
+range = 10.0
+knockback = 0.25
+projectile_speed = 15.0
+projectile_radius = 0.18
+count = 2
+spread_deg = 16.0
+homing_turn_rate = 4.5
+homing_acquire_range = 6.0
+vfx = &"dart"
+sfx = &"dart"
+anim = &"attack"
+
+[sub_resource type="Resource" id="abl"]
+script = ExtResource("2")
+display_name = "STASIS FIELD"
+kind = 4
+damage = 0.0
+cooldown = 9.0
+range = 6.0
+duration = 4.0
+cast_range = 6.0
+zone_effect = &"slow"
+zone_radius = 2.8
+magnitude = 0.55
+dps = 120.0
+vfx = &"stasis"
+sfx = &"stasis"
+anim = &"ability"
+
+[sub_resource type="Resource" id="sup"]
+script = ExtResource("2")
+display_name = "MENDING BLOOM"
+kind = 4
+damage = 0.0
+cooldown = 0.5
+range = 4.0
+duration = 5.0
+cast_range = 4.0
+zone_effect = &"heal"
+zone_radius = 3.3
+magnitude = 520.0
+charge_required = 2200.0
+vfx = &"bloom"
+sfx = &"super_nyx"
+anim = &"super"
+shake = 0.2
+
+[resource]
+script = ExtResource("1")
+id = &"nyx"
+display_name = "NYX"
+role = "Support / control"
+weapon = "Seeker drones"
+description = "Drone conductor in light phase-armor. Her seekers never miss for long; stasis locks lanes and the bloom keeps the team alive."
+max_hp = 3000
+move_speed = 5.5
+radius = 0.48
+super_passive_per_sec = 0.012
+attack = SubResource("atk")
+ability = SubResource("abl")
+super_ability = SubResource("sup")
+primary_color = Color(0.62, 0.36, 1, 1)
+secondary_color = Color(0.12, 0.1, 0.25, 1)
+accent_color = Color(0.3, 1, 0.85, 1)
+skin_color = Color(0.86, 0.78, 0.98, 1)
+model_scale = 1.0
+sfx_footstep = &"step_light"
