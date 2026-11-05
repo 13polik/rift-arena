@@ -108,6 +108,11 @@ iOS **wymaga Maca** z **Xcode 15+** i konta Apple Developer (podpisywanie). Na W
    (wymagane do gry w sieci lokalnej) i pełny ekran. Uzupełnij **App Store Team ID**.
 3. Eksport tworzy projekt Xcode (`build/ios/`). Otwórz go w Xcode → *Signing & Capabilities* → Run na iPhonie lub *Archive* → TestFlight.
 
+**Bez Maca: GitHub Actions + podpis na Windowsie.**
+Workflow `.github/workflows/ios-ipa.yml` (Actions → *iOS IPA (unsigned)* → *Run workflow*) eksportuje projekt na maszynie macOS,
+kompiluje go najnowszym Xcode bez podpisu i udostępnia artefakt **RiftArena.ipa**. Plik podpisujesz na Windowsie swoim Apple ID
+(np. iloader albo Sideloadly) i instalujesz na iPhonie. Przy darmowym Apple ID aplikacja działa 7 dni, potem trzeba ją podpisać ponownie.
+
 Różnice względem Androida: iOS zawsze używa Metal (renderer Mobile działa), pyta o dostęp do sieci lokalnej przy pierwszym dołączeniu do pokoju, a safe area (Dynamic Island) jest uwzględniona w HUD i menu.
 
 ## 6. Co działa (zweryfikowane uruchomieniem)
