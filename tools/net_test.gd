@@ -50,8 +50,9 @@ func _ready() -> void:
 		Net.connection_failed.connect(func(r): print("[client] FAILED ", r); get_tree().quit(1))
 		Lobby.state_changed.connect(_client_state)
 		if role == "wsclient":
-			print("[client] joining online server ws://127.0.0.1:24681")
-			Net.join_online("ws://127.0.0.1:24681")
+			var url := args[1] if args.size() > 1 else "ws://127.0.0.1:24681"
+			print("[client] joining online server ", url)
+			Net.join_online(url)
 		else:
 			Net.join(code)
 
@@ -73,7 +74,7 @@ var _start_sent := false
 
 func _process(delta: float) -> void:
 	t += delta
-	if t > 150.0 and not done:
+	if t > 220.0 and not done:
 		print("[%s] TIMEOUT" % role)
 		get_tree().quit(1)
 	var mn := GameManager.match_node
